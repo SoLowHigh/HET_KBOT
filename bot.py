@@ -1,5 +1,10 @@
+# Импортируем скрипт с набором команд для бота
 from scripts import cmds
+# Импортируем бота
 import telebot
+# Импортируем кнопки для бота
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Update
+# from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes
 
 bot = telebot.TeleBot('5761545857:AAFqY-qTVm9b4QjOyq8HWYIv5wBWvZfJG20')
 
@@ -7,6 +12,11 @@ bot = telebot.TeleBot('5761545857:AAFqY-qTVm9b4QjOyq8HWYIv5wBWvZfJG20')
 
 def start_message(message):
     bot.send_message(message.chat.id, 'О, привет! А я тебя.. не, не знаю')
+
+    keyboard = [[InlineKeyboardButton("Option 1", callback_data='1'),
+                 InlineKeyboardButton("Option 2", callback_data='2')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    # Update.message.reply_text('Please choose:', reply_markup=reply_markup)
     
 @bot.message_handler(content_types=['text'])
 
@@ -15,10 +25,10 @@ def start_message(message):
 def msg_type(message):
     print('     from: '+message.from_user.username)
     print('  message: '+message.text)
-    global flag
+    global flag 
     print('     type:', end=' ')
 
-    # if flag['cmd_arg'] != '~':
+    # Определяет наличие аргумента у команды
     if flag['cmd_arg'] != '~' and message.text[:1] != '/':
         print('argument for ' + '\'' + flag['cmd_arg'] + '\'')
 #       Приписывает команду к аргументу
@@ -43,11 +53,6 @@ def commands(message):
 #   weather
     if cmd >= 'weather':
         print('weather', end=' ')
-       
-        # print('|censored|')
-        # bot.send_message(message.chat.id, 'У меня лапки, доступ закрыт')
-        # tick()
-        # return
 
 #       с аргументом
         if cmd > 'weather':
@@ -126,10 +131,18 @@ def other(message):
         tick()
         return
     bot.send_message(message.chat.id, msg[::-1])
+    # output(msg[::-1])
     tick()
 
 def tick():
     print('     tick\n')
+
+# Попытка сделать вывод сообщения в чат единой функцией, но message не ловится :(
+def output(msg):
+    global message
+    bot.send_message(message.chat.id, msg)
+    tick()
+    return
 
 # cmd_arg -- если != ~, то бот будет ждать вместо новой команды дописывания аргумента к старой
 # level -- по идее, это вкусное оформление логов в виде табуляции, но непонятно, как реализовать
